@@ -307,6 +307,13 @@ Source: [Hitters data description](https://rdrr.io/cran/ISLR/man/Hitters.html)
 .left-code[
 
 ```r
+library(ISLR)
+df = Hitters %&gt;% 
+  na.omit() %&gt;% 
+  head(10) %&gt;% 
+  select( Hits, CHits, HmRun, 
+          Years, Salary, Division)
+
 df %&gt;% 
   select(., CHits, Years, Salary) %&gt;% 
   head(., 2)
@@ -328,6 +335,7 @@ df %&gt;%
 ## slice()
 
 * Use slice() when you want to indicate certain row numbers need to be kept:
+
 .left-code[
 
 ```r
@@ -360,7 +368,7 @@ df %&gt;%
 ```r
 df %&gt;% 
   filter(., (Years &gt;= 10 &amp; 
-               Hits &gt;= 100) )
+              Hits &gt;= 100))
 ```
 ]
 
@@ -386,8 +394,9 @@ df %&gt;%
 ```r
 df %&gt;% 
   select(CHits, Years) %&gt;% 
-  mutate(., hits_per_year = CHits/Years, 
-            player_name = rownames(df))
+  mutate(., 
+    hits_per_year = CHits/Years, 
+    player_name = rownames(df))
 ```
 ]
 
@@ -451,8 +460,8 @@ df %&gt;%
 ```r
 df %&gt;% 
   select(.,CHits, Salary) %&gt;% 
-    rename(career_hits = CHits, 
-           salary = Salary) %&gt;% 
+  rename(career_hits = CHits, 
+          salary = Salary) %&gt;% 
   head()
 ```
 ]
@@ -518,15 +527,15 @@ df %&gt;%
 # Ungrouped
 df %&gt;% 
   summarise(.,
-            avg_career_hits=mean(CHits),
-            avg_salary=mean(Salary))
+      avg_career_hits=mean(CHits),
+      avg_salary=mean(Salary))
  
 # # Grouped by Division
 df %&gt;%
   group_by(., Division) %&gt;%
   summarise(.,
-            avg_career_hits=mean(CHits),
-            avg_salary=mean(Salary))
+      avg_career_hits=mean(CHits),
+      avg_salary=mean(Salary))
 ```
 ]
 
