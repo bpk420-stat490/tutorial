@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Introduction to Tidyverse</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Dani Chu and Lucas Wu" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Introduction to Tidyverse
+### Dani Chu and Lucas Wu
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 40%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 55%;
+  float: right;
+  padding-left: 1%;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+&lt;/style&gt;
+
+&lt;!-- Works with xaringan's default CSS --&gt;
+
+
+## Why R?
+
+### GDP vs life expectancy over time
+
+&lt;img src="figure/gdp.gif" width="35%" /&gt;
+
+.footnote[
+Source: [kassambara](https://www.datanovia.com/en/blog/gganimate-how-to-create-plots-with-beautiful-animation-in-r/)
+]
+---
+
+### Player Movement in NBA
+
+&lt;img src="figure/basketball.gif" width="70%" /&gt;
+
+.footnote[
+Source: [James P Curley](http://curleylab.psych.columbia.edu/nba.html)
+]
+---
+
+### Route identification in NFL 
+
+&lt;img src="figure/route.gif" width="80%" /&gt;
+
+.footnote[
+Source: [Dani Chu, Matthew Reyers, James Thomson and Lucas Wu](https://twitter.com/chuurveg/status/1178337653604913152)
+]
+
+---
+
+
+## What is tidyverse?
+
+* A coherent collection of packages for data science, including ggplot2, dplyr, tidyr, readr and stringr etc.
+* Extremely powerful for data manipulation, exploration and visualization
+* Write codes like reading a sequence of tasks via the pipe operator
+* In Statistics, we typically assume data is "tidy"
+    + data is in a tabular form
+    + 1 row == 1 observation
+    + 1 column == 1 variable
+
+---
+
+## Tidyverse process
+
+&lt;img src="figure/tidyverse1.png" width="70%" /&gt;
+
+.footnote[
+Source: [Joseph Rickert](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/)
+]
+
+---
+
+## What is a pipe operator in Tidyverse?
+
+* %&gt;%
+* Used to perform a sequence of tasks
+
+&lt;img src="figure/pipe-example.jpg" width="60%" /&gt;
+
+.footnote[
+Source: [Andrew Heiss, @andrewheiss](https://twitter.com/andrewheiss/status/1173743447171354624)
+]
+
+
+---
+
+## What is a pipe operator in Tidyverse?
+
+* Used to perform sequential tasks
+* `f(x)` can be rewritten as `x %&gt;% f`
+* `f(x, y)` can be rewritten as `x %&gt;% f(y)`
+* Tip: use ctrl + shift + m as RStudio shortcut
+
+
+```r
+library(tidyverse)
+x &lt;- c(1.2, 3.3, 5.4)
+# have to nest a lot of parentheses together
+round(mean(x),0)
+```
+
+```
+## [1] 3
+```
+
+```r
+# pipe operator makes it cleaner!
+x %&gt;% 
+  mean() %&gt;% 
+  round(0)
+```
+
+```
+## [1] 3
+```
+
+---
+
+## What is a pipe operator in Tidyverse?
+
+* `f(x, y)` can be rewritten as `x %&gt;% f(y)`
+* x %&gt;% f(y) is equivalent to 
+
+```r
+x %&gt;% f(., y)
+```
+
+* dot notation allows you to pass in a variable as the second or third argument to a function
+
+
+```r
+x %&gt;% f(y, .)
+```
+* which is equivalent to f(y,x)
+
+.footnote[
+Source: [Most of following slides are adapted from Ryan Tibshirani](https://www.stat.cmu.edu/~ryantibs/statcomp-F18/)
+]
+---
+
+## Basic functions of dplyr
+* Some basic functions:
+    + `select()`:	select columns
+    + `slice()`:  subset rows based on index
+    + `filter()`:	subset rows based on conditions
+    + `mutate()`:	create new columns
+    + `arrange()`:	order rows
+    + `rename()`: rename columns
+    + `group_by()`:	allows for group operations
+    + `summarise()`: summarise values, often used together with `group_by()`
+
+
+---
+
+## Data set
+
+* Major League Baseball Data from the 1986 and 1987 seasons available from ISLR package
+* We only select the first 10 players and 6 variables as a case study
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Hits &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CHits &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; HmRun &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Years &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Salary &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Division &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Alan Ashby &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 835 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 475.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; W &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Alvin Davis &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 457 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 480.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; W &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Andre Dawson &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 141 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1575 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 500.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Andres Galarraga &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 87 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 101 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 91.500 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Alfredo Griffin &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 169 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1133 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 750.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; W &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Al Newman &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 42 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 70.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Argenis Salazar &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 73 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 108 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 100.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; W &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Andres Thomas &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 86 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 75.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; W &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Andre Thornton &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1332 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1100.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; -Alan Trammell &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 159 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1300 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 517.143 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; E &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Source: [Hitters data description](https://rdrr.io/cran/ISLR/man/Hitters.html)
+
+---
+
+## select()
+
+* Use select() when you want to pick out certain columns:
+
+.left-code[
+
+```r
+df %&gt;% 
+  select(., CHits, Years, Salary) %&gt;% 
+  head(., 2)
+```
+]
+
+.right-plot[
+
+```
+##              CHits Years Salary
+## -Alan Ashby    835    14    475
+## -Alvin Davis   457     3    480
+```
+]
+
+
+---
+
+## slice()
+
+* Use slice() when you want to indicate certain row numbers need to be kept:
+.left-code[
+
+```r
+df %&gt;% 
+  select(., CHits, Years, Salary) %&gt;% 
+  slice(c(1:3,7,8))
+```
+]
+
+.right-plot[
+
+```
+##   CHits Years Salary
+## 1   835    14    475
+## 2   457     3    480
+## 3  1575    11    500
+## 4   108     3    100
+## 5    86     2     75
+```
+]
+
+---
+
+## filter()
+
+* Use filter() when you want to subset rows based on logical conditions:
+
+.left-code[
+
+```r
+df %&gt;% 
+  filter(., (Years &gt;= 10 &amp; 
+               Hits &gt;= 100) )
+```
+]
+
+.right-plot[
+
+```
+##   Hits CHits HmRun Years  Salary Division
+## 1  141  1575    20    11 500.000        E
+## 2  169  1133     4    11 750.000        W
+## 3  159  1300    21    10 517.143        E
+```
+]
+
+---
+
+
+## mutate()
+
+* Use mutate() when you want to create one or several columns:
+
+.left-code[
+
+```r
+df %&gt;% 
+  select(CHits, Years) %&gt;% 
+  mutate(., hits_per_year = CHits/Years, 
+            player_name = rownames(df))
+```
+]
+
+.right-plot[
+
+```
+##    CHits Years hits_per_year       player_name
+## 1    835    14      59.64286       -Alan Ashby
+## 2    457     3     152.33333      -Alvin Davis
+## 3   1575    11     143.18182     -Andre Dawson
+## 4    101     2      50.50000 -Andres Galarraga
+## 5   1133    11     103.00000  -Alfredo Griffin
+## 6     42     2      21.00000        -Al Newman
+## 7    108     3      36.00000  -Argenis Salazar
+## 8     86     2      43.00000    -Andres Thomas
+## 9   1332    13     102.46154   -Andre Thornton
+## 10  1300    10     130.00000    -Alan Trammell
+```
+]
+
+
+---
+
+
+## arrange()
+
+* Use arrange() to order rows by values of a column:
+
+.left-code[
+
+```r
+df %&gt;% 
+  arrange(., desc(Salary))
+```
+]
+
+.right-plot[
+
+```
+##    Hits CHits HmRun Years   Salary Division
+## 1    92  1332    17    13 1100.000        E
+## 2   169  1133     4    11  750.000        W
+## 3   159  1300    21    10  517.143        E
+## 4   141  1575    20    11  500.000        E
+## 5   130   457    18     3  480.000        W
+## 6    81   835     7    14  475.000        W
+## 7    73   108     0     3  100.000        W
+## 8    87   101    10     2   91.500        E
+## 9    81    86     6     2   75.000        W
+## 10   37    42     1     2   70.000        E
+```
+]
+
+---
+
+## rename()
+* Use rename() to easily rename columns:
+
+.left-code[
+
+```r
+df %&gt;% 
+  select(.,CHits, Salary) %&gt;% 
+    rename(career_hits = CHits, 
+           salary = Salary) %&gt;% 
+  head()
+```
+]
+
+.right-plot[
+
+```
+##                   career_hits salary
+## -Alan Ashby               835  475.0
+## -Alvin Davis              457  480.0
+## -Andre Dawson            1575  500.0
+## -Andres Galarraga         101   91.5
+## -Alfredo Griffin         1133  750.0
+## -Al Newman                 42   70.0
+```
+]
+
+---
+
+## group_by()
+
+* Use group_by() to define a grouping of rows based on a column:
+* Note that this does not change anything about the dataframe
+* Only difference is that when it prints, we’re told about the groups
+
+.left-code[
+
+```r
+df %&gt;% 
+    group_by(., Division)
+```
+]
+
+.right-plot[
+
+```
+## # A tibble: 10 x 6
+## # Groups:   Division [2]
+##     Hits CHits HmRun Years Salary Division
+##  * &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;dbl&gt; &lt;fct&gt;   
+##  1    81   835     7    14  475   W       
+##  2   130   457    18     3  480   W       
+##  3   141  1575    20    11  500   E       
+##  4    87   101    10     2   91.5 E       
+##  5   169  1133     4    11  750   W       
+##  6    37    42     1     2   70   E       
+##  7    73   108     0     3  100   W       
+##  8    81    86     6     2   75   W       
+##  9    92  1332    17    13 1100   E       
+## 10   159  1300    21    10  517.  E
+```
+]
+
+
+---
+
+## summarise()
+* use summarise() to apply functions to rows—ungrouped or grouped—of a data frame:
+
+.left-code[
+
+```r
+# Ungrouped
+df %&gt;% 
+  summarise(.,
+            avg_career_hits=mean(CHits),
+            avg_salary=mean(Salary))
+ 
+# # Grouped by Division
+df %&gt;%
+  group_by(., Division) %&gt;%
+  summarise(.,
+            avg_career_hits=mean(CHits),
+            avg_salary=mean(Salary))
+```
+]
+
+.right-plot[
+
+```
+##   avg_career_hits avg_salary
+## 1           696.9   415.8643
+```
+
+```
+## # A tibble: 2 x 3
+##   Division avg_career_hits avg_salary
+##   &lt;fct&gt;              &lt;dbl&gt;      &lt;dbl&gt;
+## 1 E                   870        456.
+## 2 W                   524.       376
+```
+]
+
+
+---
+
+## Your time!
+
+Check out the following links if you would like to learn more:
+
+- https://www.tidyverse.org/learn/
+- https://www.datanovia.com/en/lessons/select-data-frame-columns-in-r/
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
