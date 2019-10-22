@@ -7,17 +7,15 @@
 # Load the package:
 library(nflscrapR)
 
-# Access the Steelers games from this season:
-pit_games <- scrape_game_ids(2018, teams = "PIT")
-
-# Let's just pull the play-by-play data from this week's win against the Bengals:
-pit_cin_pbp <- scrape_json_play_by_play(2018101401)
-
-# Print out the first so many rows:
-
 # Let's use the tidyverse suite of packages to handle this data:
 # install.packages("tidyverse")
 library(tidyverse)
+
+# Let's just pull the play-by-play data from this week's win against the Bengals:
+pit_cin_pbp <- read_csv("data/pit_cin_pbp.csv")
+
+# Print out the first so many rows:
+
 
 # We're now going to 'select' a subset of the columns, just to begin to 
 # understand how to handle this data:
